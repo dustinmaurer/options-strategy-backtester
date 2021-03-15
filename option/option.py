@@ -1,5 +1,6 @@
 """The Option oobject stores (or solves for) all attributes of an option"""
 import scipy.stats as sps
+from scipy.special import ndtri
 import numpy as np
 from datetime import date, timedelta
 
@@ -96,6 +97,19 @@ class Option:
 
       return value
 
+    def setStrikeFromDelta(self, delta, price, eval_date):
+      if type(eval_date) is not date:   
+        try:
+          eval_date = date.fromisoformat(eval_date)
+        except:
+          raise TypeError("Expiration must be a date.")
 
+      time_delta = self.expiration - eval_date + timedelta(days = 1)
+      time = time_delta.days / 365.0
+
+      self.strike = np.exp(- ( ndtri(delta) * self.iv * np.sqrt(time) - self.iv ** 2 * 0.5 * time)  ) * price
+
+
+      return self.strike
 
 
