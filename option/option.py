@@ -42,7 +42,7 @@ class Option:
         if kind.lower() not in ["put","call"]:
           raise TypeError("The option must be either a put or a call.")
         self.kind = kind.lower()
-        self.kind_value = 1 if self.kind == "put" else -1
+        self.kind_value = 1 if self.kind == "call" else -1
 
         if strike <= 0:
           raise TypeError("The option strike must be positive.")
@@ -91,6 +91,8 @@ class Option:
       d1 = (np.log(price / self.strike) + .5 * self.iv ** 2 * time) / self.iv / np.sqrt(time)
       d2 = d1 - self.iv * np.sqrt(time)
       value = self.kind_value * price * sps.norm.cdf( self.kind_value * d1 ) - self.kind_value * self.strike * sps.norm.cdf( self.kind_value * d2 )
+
+      self.delta = self.kind_value * sps.norm.cdf( self.kind_value * d1 )
 
       return value
 
